@@ -1,0 +1,13 @@
+#!/bin/sh /etc/rc.common
+
+START=99
+ 
+start() {
+	for config_file in /etc/sdutools/sdunetd/*.conf; do 
+		(/usr/bin/sdunetd -c "$config_file" -m -o - 2>&1 | logger -t sdunetd_"$config_file") &
+	done
+}
+
+stop() { 
+  killall sdunetd
+}
