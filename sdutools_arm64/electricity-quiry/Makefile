@@ -7,32 +7,32 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:=sdunetd
+PKG_NAME:= electricity-quiry
 PKG_RELEASE:=1
 
 include $(INCLUDE_DIR)/package.mk
 
-define Package/sdunetd
+define Package/$(PKG_NAME)
   SECTION:=util
   CATEGORY:=SDUtool
-  TITLE:=auto login
+  TITLE:=auto quiry electricity
 
 endef
 
-define Package/sdunetd/description
- sdunetd. used for sdu.
+define Package/$(PKG_NAME)/description
+ $(PKG_NAME). used for sdu.
 endef
 
 define Build/Compile
 endef
 
-define Package/sdunetd/install
+define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
-	$(INSTALL_BIN) $(PKG_BUILD_DIR)/sdunetd $(1)/usr/bin/
-	$(INSTALL_DIR) $(1)/etc/sdutools/sdunetd
+	$(INSTALL_BIN) $(PKG_BUILD_DIR)/$(PKG_NAME) $(1)/usr/bin/
+	$(INSTALL_DIR) $(1)/etc/sdutools/$(PKG_NAME)
 	$(INSTALL_DIR) $(1)/etc/init.d
-	$(INSTALL_BIN) ./files/sdunetd.init $(1)/etc/init.d/sdunetd
+	$(INSTALL_BIN) ./files/$(PKG_NAME).init $(1)/etc/init.d/$(PKG_NAME)
 endef
 
 
-$(eval $(call BuildPackage,sdunetd))
+$(eval $(call BuildPackage,$(PKG_NAME)))
