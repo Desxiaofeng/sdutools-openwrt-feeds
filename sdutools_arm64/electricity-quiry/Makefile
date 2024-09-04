@@ -7,8 +7,9 @@
 
 include $(TOPDIR)/rules.mk
 
-PKG_NAME:= electricity-quiry
+PKG_NAME:=electricity-quiry
 PKG_RELEASE:=1
+PKG_BUILD_DEPENDS:=curl
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -16,7 +17,7 @@ define Package/$(PKG_NAME)
   SECTION:=util
   CATEGORY:=SDUtool
   TITLE:=auto quiry electricity
-
+  DEPENDS:=+libcurl +libstdcpp
 endef
 
 define Package/$(PKG_NAME)/description
@@ -24,7 +25,14 @@ define Package/$(PKG_NAME)/description
 endef
 
 define Build/Compile
+	$(MAKE) -C $(PKG_BUILD_DIR) \
+		CC="$(TARGET_CC)" \
+		CXX="$(TARGET_CXX)" \
+		CXXFLAGS="$(TARGET_CPPFLAGS)" \
+		LDFLAGS="$(TARGET_LDFLAGS)" \
+		$(TARGET_CONFIGURE_OPTS)
 endef
+
 
 define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/bin
