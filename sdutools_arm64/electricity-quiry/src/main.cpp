@@ -92,10 +92,10 @@ int main(int argc, char* argv[]) {
     while(true){
         std::string balance_str = query(config["campus_card"], config["dormitory_building"], config["room_id"]);
         std::cout << "electricity quiry at: " << std::chrono::system_clock::now().time_since_epoch().count() <<", balance is : " << balance_str << std::endl;
-        if (std::stoi(balance_str) < threshold){
+        if (balance_str!="" && std::stoi(balance_str) < threshold){
             mail(config, balance_str);
         }
-
+        std::cout << "electricity-quiry start sleeping 24hours...\n";
         auto interval = std::chrono::hours(24);
         std::this_thread::sleep_for(interval);
     }
