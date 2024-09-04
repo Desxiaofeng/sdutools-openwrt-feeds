@@ -86,12 +86,6 @@ bool mail(std::map<std::string, std::string> &config, string balance){
         for(int i=0; i<receicers.size(); i++){
             recipients = curl_slist_append(recipients, receicers[i].c_str());
         }
-        // curl_easy_setopt(curl, CURLOPT_URL, "smtps://smtp.163.com:465");
-        // curl_easy_setopt(curl, CURLOPT_USERNAME, "xiaofeng476255853@163.com");
-        // curl_easy_setopt(curl, CURLOPT_PASSWORD, "HZDEJJIILBBCUIFY");
-        // curl_easy_setopt(curl, CURLOPT_USE_SSL, (long)CURLUSESSL_ALL);
-
-        // curl_easy_setopt(curl, CURLOPT_MAIL_FROM, "xiaofeng476255853@163.com");
         curl_easy_setopt(curl, CURLOPT_URL, config["smtp_url"].c_str());
         curl_easy_setopt(curl, CURLOPT_USERNAME, config["sender_mail"].c_str());
         curl_easy_setopt(curl, CURLOPT_PASSWORD, config["smtp_passwd"].c_str());
@@ -107,6 +101,7 @@ bool mail(std::map<std::string, std::string> &config, string balance){
 
         if(res != CURLE_OK) {
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+            std::cerr << "curl_code: " << res<< std::endl;
         }
 
         curl_slist_free_all(recipients);
