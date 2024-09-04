@@ -16,7 +16,7 @@ define Package/sdunetd
   SECTION:=util
   CATEGORY:=SDUtool
   TITLE:=auto login
-
+  DEPENDS:=+kmod-macvlan
 endef
 
 define Package/sdunetd/description
