@@ -1,5 +1,5 @@
 #!/bin/sh /etc/rc.common
-cmd="/usr/bin/electricity-quiry -c /etc/sdutools/electricity-quiry/config.txt -t 10"
+cmd="/usr/bin/electricity-quiry -c /etc/sdutools/electricity-quiry/config.txt"
 name="electricity-quiry"
 pid_file="/var/run/$name.pid"
 stdout_log="/var/log/$name.log"

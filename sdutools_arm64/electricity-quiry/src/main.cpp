@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
     std::string config_file;
     std::map<std::string, std::string> config;
     std::string config_output_file = "/etc/sdutools/electricity-quiry/config.txt";
-    int threshold = 10;
+    int threshold = 15;
 
     int opt;
     while ((opt = getopt(argc, argv, "c:o:t:")) != -1) {
@@ -89,15 +89,57 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    int mail_count = 2;
     while(true){
         std::string balance_str = query(config["campus_card"], config["dormitory_building"], config["room_id"]);
-        std::cout << "electricity quiry at: " << std::chrono::system_clock::now().time_since_epoch().count() <<", balance is : " << balance_str << std::endl;
-        if (balance_str!="" && std::stoi(balance_str) < threshold){
-            mail(config, balance_str);
+        if (balance_str == ""){
+            std::cout << "获取电费余额失败，5分钟后重试" << std::endl;
+            std::cout << std::flush;
+            auto interval = std::chrono::minutes(5);
+            std::this_thread::sleep_for(interval);
+            continue;
         }
-        std::cout << "electricity-quiry start sleeping 24hours...\n";
-        auto interval = std::chrono::hours(24);
-        std::this_thread::sleep_for(interval);
+
+        // 获取当前时间点（UTC时间）
+        auto now = std::chrono::system_clock::now();
+        // 将时间加上8小时（28800秒），以调整到 UTC+8
+        auto now_utc8 = now + std::chrono::hours(8);
+        // 转换为 time_t 类型
+        std::time_t current_time_utc8 = std::chrono::system_clock::to_time_t(now_utc8);
+        // 格式化输出时间
+        std::cout << "查询时间: "
+                << std::put_time(std::gmtime(&current_time_utc8), "%Y-%m-%d %H:%M:%S") 
+                << " UTC+8, 余额为: " << balance_str << std::endl;
+
+        if (std::stoi(balance_str) > threshold){
+            mail_count = 3;
+            std::cout << "sleeping 1 hour..." << std::endl;
+            std::cout << std::flush;
+
+            auto interval = std::chrono::hours(1);
+            std::this_thread::sleep_for(interval);
+        }else {
+            // wait until morning
+            std::tm* utc8_time = std::gmtime(&current_time_utc8);
+            int current_hour = utc8_time->tm_hour;
+            if (current_hour >= 0 && current_hour < 9) {
+                auto next_morning = now_utc8 + std::chrono::hours(23 - current_hour);
+                auto wait_duration = std::chrono::duration_cast<std::chrono::milliseconds>(next_morning - now_utc8);
+                std::cout << "电费已达阈值，但现在时间是 " << current_hour << " 点，等待到9点再尝试通知。" << std::endl;
+                std::cout << std::flush;
+                std::this_thread::sleep_for(wait_duration);
+            }
+            // mail
+            if (mail_count > 0){
+                mail(config, balance_str);
+                mail_count--;
+                std::cout << "已通知，将每5小时尝试通知一次，剩余" << mail_count << "次" << std::endl;
+                std::cout << std::flush;
+            }
+
+            auto interval = std::chrono::hours(5);
+            std::this_thread::sleep_for(interval);
+        }
     }
 
     
