@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
     int mail_count = 2;
     while(true){
         std::string balance_str = query(config["campus_card"], config["dormitory_building"], config["room_id"]);
-        if (balance_str == ""){
+        if (balance_str == "" || (balance_str[0]>'9' || balance_str[0]<'0')){
             std::cout << "获取电费余额失败，5分钟后重试" << std::endl;
             std::cout << std::flush;
             auto interval = std::chrono::minutes(5);
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
                 << std::put_time(std::gmtime(&current_time_utc8), "%Y-%m-%d %H:%M:%S") 
                 << " UTC+8, 余额为: " << balance_str << std::endl;
 
-        if (std::stoi(balance_str) > threshold){
+        if (std::strtol(balance_str.c_str(), nullptr, 10) > threshold){
             mail_count = 3;
             std::cout << "sleeping 1 hour..." << std::endl;
             std::cout << std::flush;
