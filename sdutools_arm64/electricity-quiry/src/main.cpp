@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
 
         // 获取当前时间点（UTC时间）
         auto now = std::chrono::system_clock::now();
-        // 将时间加上8小时（28800秒），以调整到 UTC+8
+        // 将时间加上8小时，以调整到 UTC+8
         auto now_utc8 = now + std::chrono::hours(8);
         // 转换为 time_t 类型
         std::time_t current_time_utc8 = std::chrono::system_clock::to_time_t(now_utc8);
@@ -123,8 +123,7 @@ int main(int argc, char* argv[]) {
             std::tm* utc8_time = std::gmtime(&current_time_utc8);
             int current_hour = utc8_time->tm_hour;
             if (current_hour >= 0 && current_hour < 9) {
-                auto next_morning = now_utc8 + std::chrono::hours(23 - current_hour);
-                auto wait_duration = std::chrono::duration_cast<std::chrono::milliseconds>(next_morning - now_utc8);
+                auto wait_duration = std::chrono::hours(9 - current_hour);
                 std::cout << "电费已达阈值，但现在时间是 " << current_hour << " 点，等待到9点再尝试通知。" << std::endl;
                 std::cout << std::flush;
                 std::this_thread::sleep_for(wait_duration);
